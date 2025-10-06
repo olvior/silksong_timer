@@ -37,8 +37,8 @@
     <Reference Include="UnityEngine.UI">
       <HintPath>$(SilksongFolder)/Hollow Knight Silksong_Data/Managed/UnityEngine.UI.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>$(SilksongFolder)/Hollow Knight Silksong_Data/Managed/Unity.TextMeshPro.dll</HintPath>
+    <Reference Include="UnityEngine">
+      <HintPath>$(SilksongFolder)/Hollow Knight Silksong_Data/Managed/UnityEngine.dll</HintPath>
     </Reference>
     <!--If you're unable resolve this dependency, check that you're using the nuget v3 package feed instead of v2.-->
     <PackageReference Include="Silksong.GameLibs" Version="1.0.0-silksong1.0.28324"/>

@@ -20,7 +20,7 @@ public class Keybinds
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class silksong_timer : BaseUnityPlugin
 {
-    private TimerUI timerUI;
+    private TimerDisplay timerDisplay;
 
     private const string MENU_TITLE = "Menu_Title";
     private const string QUIT_TO_MENU = "Quit_To_Menu";
@@ -150,13 +150,9 @@ public class silksong_timer : BaseUnityPlugin
 
         if (ShouldTickTimer())
         {
-            if (timerUI == null)
-            {
-                timerUI = new TimerUI();
-            }
             time += 1;
             // Logger.LogInfo(getTimeText(time));
-            timerUI.setTime(getTimeText(time));
+            timerDisplay.setTime(getTimeText(time));
         }
     }
 
@@ -186,6 +182,8 @@ public class silksong_timer : BaseUnityPlugin
     {
         SceneManager.activeSceneChanged += onActiveSceneChanged;
         Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} has loaded!");
+
+        timerDisplay = new TimerDisplay();
     }
 }
 
