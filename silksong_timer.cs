@@ -29,16 +29,16 @@ public class silksong_timer : BaseUnityPlugin
     private string sceneEndTimer = "";
 
     private Keybinds keybinds = new Keybinds();
-    private int time = 0;
+    private double time = 0.0;
 
     private bool timerPaused = true;
 
     private GameState prevGameState = GameState.PLAYING;
     private bool lookForTele = false;
 
-    private int[] history = new int[5];
+    private double[] history = new double[5];
     private int history_num = 0;
-    private int pb = 0;
+    private double pb = 0;
 
     private bool ShouldTickTimer()
     {
@@ -129,7 +129,7 @@ public class silksong_timer : BaseUnityPlugin
         Logger.LogInfo("Started timer");
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
         if (Input.GetKeyDown(keybinds.StartTimer))
         {
@@ -150,7 +150,7 @@ public class silksong_timer : BaseUnityPlugin
 
         if (ShouldTickTimer())
         {
-            time += 1;
+            time += Time.unscaledDeltaTime;
             // Logger.LogInfo(getTimeText(time));
             timerDisplay.setTime(getTimeText(time));
         }
@@ -169,11 +169,11 @@ public class silksong_timer : BaseUnityPlugin
     }
 
 
-    private string getTimeText(int ticks)
+    private string getTimeText(double t)
     {
-        int milis = (ticks * 100) / 50 % 100;
-        int seconds = ticks / 50 % 60;
-        int minutes = ticks / 50 / 60;
+        int milis = (int)(t * 100) % 100;
+        int seconds = (int)(t) % 60;
+        int minutes = (int)(t) / 60;
 
         return $"{minutes}:{seconds:00}.{milis:00}";
     }
