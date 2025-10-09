@@ -102,7 +102,7 @@ public class silksong_timer : BaseUnityPlugin
         bool is_game_time_paused = r0 || r1 || r2 || r3 || r4 || r5;
         if (is_game_time_paused)
         {
-            Logger.LogInfo($"{r0}{r1}{r2}{r3}{r4}{r5} {next_scene}");
+            // Logger.LogInfo($"{r0}{r1}{r2}{r3}{r4}{r5} {next_scene}");
         }
 
         prevGameState = game_state;
@@ -115,11 +115,12 @@ public class silksong_timer : BaseUnityPlugin
         history_num += 1;
         history_num %= 5;
 
-        Logger.LogInfo($"Timed: {getTimeText(time)}");
+        // Logger.LogInfo($"Timed: {getTimeText(time)}");
         if (pb == 0 || time < pb)
         {
             pb = time;
-            Logger.LogInfo($"Got a pb: {getTimeText(time)}");
+            // Logger.LogInfo($"Got a pb: {getTimeText(time)}");
+            timerDisplay.setPbTime(getTimeText(pb));
         }
         timerPaused = true;
     }
@@ -188,11 +189,6 @@ public class silksong_timer : BaseUnityPlugin
     }
 
     private void Awake()
-    {
-        SceneManager.activeSceneChanged += onActiveSceneChanged;
-        Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} has loaded!");
-    }
-    private void Start()
     {
         SceneManager.activeSceneChanged += onActiveSceneChanged;
         Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} has loaded!");

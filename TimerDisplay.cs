@@ -8,8 +8,9 @@ public class TimerDisplay
 {
     private GameObject canvas;
 
-    private GameObject textObject;
+    // private GameObject textObject;
     private Text text;
+    private Text pbText;
     private Font theFont;
 
     public TimerDisplay()
@@ -38,8 +39,16 @@ public class TimerDisplay
         canvasRect.anchorMax = new Vector2(1, 1);
         canvasRect.sizeDelta = new Vector2(0, 0);
 
+        text = createText("TimerText", "0:00.00", 70, new Vector2(0.95f, 0.9f), new Vector2(0.8f, 0.8f));
+        pbText = createText("TimerPBText", "PB: 0:00.00", 40, new Vector2(0.95f, 0.8f), new Vector2(0.7f, 0.7f));
 
-        textObject = new GameObject("TimerModTimerText");
+        UnityEngine.Object.DontDestroyOnLoad(canvas);
+        // UnityEngine.Object.DontDestroyOnLoad(textObject);
+    }
+
+    public Text createText(string name, string defaultText, int fontSize, Vector2 anchorMax, Vector2 anchorMin)
+    {
+        GameObject textObject = new GameObject(name);
         textObject.layer = LayerMask.NameToLayer("UI");
         textObject.AddComponent<CanvasRenderer>();
         RectTransform textTransform = textObject.AddComponent<RectTransform>();
@@ -49,25 +58,28 @@ public class TimerDisplay
         group.interactable = false;
         group.blocksRaycasts = false;
 
-        text = textObject.AddComponent<Text>();
-        text.text = "1:01.21";
+        Text text = textObject.AddComponent<Text>();
+        text.text = defaultText;
         text.font = theFont;
-        text.fontSize = 70;
+        text.fontSize = fontSize;
         text.fontStyle = FontStyle.Normal;
         text.alignment = TextAnchor.UpperRight;
 
         textObject.transform.SetParent(canvas.transform, false);
 
-        // Vector2 position = new Vector2(1, 1);
-        textTransform.anchorMax = new Vector2(0.95f, 0.9f);
-        textTransform.anchorMin = new Vector2(0.8f, 0.8f);
+        textTransform.anchorMax = anchorMax;
+        textTransform.anchorMin = anchorMin;
 
-        UnityEngine.Object.DontDestroyOnLoad(canvas);
-        UnityEngine.Object.DontDestroyOnLoad(textObject);
+        return text;
     }
 
     public void setTime(string time)
     {
         text.text = time;
+    }
+
+    public void setPbTime(string time)
+    {
+        pbText.text = "PB: " + time;
     }
 }
