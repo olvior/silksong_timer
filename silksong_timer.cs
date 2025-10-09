@@ -40,6 +40,8 @@ public class silksong_timer : BaseUnityPlugin
     private int history_num = 0;
     private double pb = 0;
 
+    private int funSceneCount = 0;
+
     private bool ShouldTickTimer()
     {
         if (timerPaused)
@@ -119,6 +121,7 @@ public class silksong_timer : BaseUnityPlugin
             pb = time;
             Logger.LogInfo($"Got a pb: {getTimeText(time)}");
         }
+        timerPaused = true;
     }
 
     private void startTimer()
@@ -152,12 +155,18 @@ public class silksong_timer : BaseUnityPlugin
         {
             time += Time.unscaledDeltaTime;
             // Logger.LogInfo(getTimeText(time));
+
             timerDisplay.setTime(getTimeText(time));
         }
     }
 
     public void onActiveSceneChanged(Scene from, Scene to)
     {
+        if (funSceneCount == 3)
+            timerDisplay = new TimerDisplay();
+
+        funSceneCount++;
+
         if (to.name == sceneStartTimer)
         {
             startTimer();
@@ -182,8 +191,11 @@ public class silksong_timer : BaseUnityPlugin
     {
         SceneManager.activeSceneChanged += onActiveSceneChanged;
         Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} has loaded!");
-
-        timerDisplay = new TimerDisplay();
+    }
+    private void Start()
+    {
+        SceneManager.activeSceneChanged += onActiveSceneChanged;
+        Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} has loaded!");
     }
 }
 
