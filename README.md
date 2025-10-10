@@ -6,3 +6,5 @@ Usage:
 - f8 to set the start scene
 - f9 to set the end scene
 - f10 to cancel the timer
+
+(these can be edited in the settings file, in the Silksong config folder)
