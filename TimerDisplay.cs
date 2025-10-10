@@ -19,8 +19,7 @@ public class TimerDisplay
         var allFonts = Resources.FindObjectsOfTypeAll<Font>();
         theFont = allFonts.FirstOrDefault(x => x.name == "TrajanPro-Regular");
 
-        Console.WriteLine($"{allFonts.Length}");
-        Console.WriteLine($"DSADSA ADSDA DSADSA {theFont == null}");
+        Console.WriteLine($"Timer Mod, fonts found: {allFonts.Length}");
 
         canvas = new GameObject("TimerModCanvas");
         var canvasC = canvas.AddComponent<UnityEngine.Canvas>();
@@ -83,3 +82,4 @@ public class TimerDisplay
         pbText.text = "PB: " + time;
     }
 }
+

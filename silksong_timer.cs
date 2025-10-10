@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Reflection;
 using System.IO;
+using Newtonsoft.Json;
 using System;
 using GlobalEnums;
 
@@ -12,8 +13,8 @@ namespace silksong_timer;
 [Serializable]
 public class Keybinds
 {
-    public string StartTimer = "f8";
-    public string EndTimer = "f9";
+    public string SetStartScene = "f8";
+    public string SetEndScene = "f9";
     public string CancelTimer = "f10";
 }
 
@@ -135,12 +136,12 @@ public class silksong_timer : BaseUnityPlugin
 
     private void LateUpdate()
     {
-        if (Input.GetKeyDown(keybinds.StartTimer))
+        if (Input.GetKeyDown(keybinds.SetStartScene))
         {
             sceneStartTimer = SceneManager.GetActiveScene().name;
             Logger.LogInfo("Set start scene");
         }
-        if (Input.GetKeyDown(keybinds.EndTimer))
+        if (Input.GetKeyDown(keybinds.SetEndScene))
         {
             sceneEndTimer = SceneManager.GetActiveScene().name;
             Logger.LogInfo("Set end scene");
@@ -178,7 +179,6 @@ public class silksong_timer : BaseUnityPlugin
         }
     }
 
-
     private string getTimeText(double t)
     {
         int milis = (int)(t * 100) % 100;
@@ -188,10 +188,24 @@ public class silksong_timer : BaseUnityPlugin
         return $"{minutes}:{seconds:00}.{milis:00}";
     }
 
+    private void LoadKeybinds()
+    {
+        string path = Application.persistentDataPath + "/silksong_timer_settings.json";
+
+        if (!File.Exists(path))
+        {
+            File.WriteAllText(path, JsonConvert.SerializeObject(keybinds, Formatting.Indented));
+            return;
+        }
+
+        keybinds = JsonConvert.DeserializeObject<Keybinds>(File.ReadAllText(path));
+    }
+
     private void Awake()
     {
         SceneManager.activeSceneChanged += onActiveSceneChanged;
         Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} has loaded!");
+        LoadKeybinds();
     }
 }
 
