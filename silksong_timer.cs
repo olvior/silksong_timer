@@ -110,6 +110,12 @@ public class silksong_timer : BaseUnityPlugin
         return !is_game_time_paused;
     }
 
+    private void resetPb()
+    {
+        pb = 0;
+        timerDisplay.setPbTime(getTimeText(pb));
+    }
+
     private void endTimer()
     {
         history[history_num] = time;
@@ -139,11 +145,13 @@ public class silksong_timer : BaseUnityPlugin
         if (Input.GetKeyDown(keybinds.SetStartScene))
         {
             sceneStartTimer = SceneManager.GetActiveScene().name;
+            resetPb();
             Logger.LogInfo("Set start scene");
         }
         if (Input.GetKeyDown(keybinds.SetEndScene))
         {
             sceneEndTimer = SceneManager.GetActiveScene().name;
+            resetPb();
             Logger.LogInfo("Set end scene");
         }
         if (Input.GetKeyDown(keybinds.CancelTimer))
