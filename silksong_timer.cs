@@ -17,6 +17,9 @@ public class Keybinds
     public string SetEndScene = "f9";
     public string CancelTimer = "f10";
     public string ResetPb = "f11";
+
+    public string StartTimer = "f2";
+    public string EndTimer = "f3";
 }
 
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
@@ -162,9 +165,11 @@ public class silksong_timer : BaseUnityPlugin
             timerPaused = true;
         }
         if (Input.GetKeyDown(keybinds.ResetPb))
-        {
             resetPb();
-        }
+        if (Input.GetKeyDown(keybinds.StartTimer))
+            startTimer();
+        if (Input.GetKeyDown(keybinds.EndTimer))
+            endTimer();
 
         if (ShouldTickTimer())
         {
