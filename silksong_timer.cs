@@ -177,7 +177,7 @@ public class silksong_timer : BaseUnityPlugin
 
         funSceneCount++;
 
-        if (to.name == sceneStartTimer)
+        if (to.name == sceneStartTimer && timerPaused)
         {
             startTimer();
         }
