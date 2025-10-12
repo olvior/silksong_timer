@@ -16,6 +16,7 @@ public class Keybinds
     public string SetStartScene = "f8";
     public string SetEndScene = "f9";
     public string CancelTimer = "f10";
+    public string ResetPb = "f11";
 }
 
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
@@ -160,6 +161,10 @@ public class silksong_timer : BaseUnityPlugin
             time = 0;
             timerPaused = true;
         }
+        if (Input.GetKeyDown(keybinds.ResetPb))
+        {
+            resetPb();
+        }
 
         if (ShouldTickTimer())
         {
@@ -207,6 +212,9 @@ public class silksong_timer : BaseUnityPlugin
         }
 
         keybinds = JsonConvert.DeserializeObject<Keybinds>(File.ReadAllText(path));
+
+        // write the file anyways in case of new keybinds
+        File.WriteAllText(path, JsonConvert.SerializeObject(keybinds, Formatting.Indented));
     }
 
     private void Awake()
