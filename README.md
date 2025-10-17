@@ -7,4 +7,6 @@ Usage:
 - f9 to set the end scene
 - f10 to cancel the timer
 
-(these can be edited in the settings file, in the Silksong config folder)
+These can be edited in the settings file, in the in the steam folder for silksong Hollow Knight Silksong/BepInEx/config/silksong_timer.cfg
+
+These can also be changed using the bepinex config manager while in-game

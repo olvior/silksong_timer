@@ -10,8 +10,9 @@ namespace silksong_timer;
 
 public class Keybinds
 {
-    public ConfigEntry<KeyboardShortcut> SetStartScene;
-    public ConfigEntry<KeyboardShortcut> SetEndScene;
+    public ConfigEntry<KeyboardShortcut> SetStart;
+    public ConfigEntry<KeyboardShortcut> SetEnd;
+    public ConfigEntry<KeyboardShortcut> ToggleTriggerMethod;
     public ConfigEntry<KeyboardShortcut> CancelTimer;
     public ConfigEntry<KeyboardShortcut> StartTimer;
     public ConfigEntry<KeyboardShortcut> EndTimer;
@@ -19,9 +20,10 @@ public class Keybinds
 
     public Keybinds(ConfigFile Config)
     {
-        SetStartScene = Config.Bind("Shortcuts", "SetStartScene", new KeyboardShortcut(KeyCode.F8), "");
-        SetEndScene = Config.Bind("Shortcuts", "SetEndScene", new KeyboardShortcut(KeyCode.F9), "");
-        CancelTimer = Config.Bind("Shortcuts", "CancelTimer", new KeyboardShortcut(KeyCode.F10), "Cancel the timer (does not affect pb)");
+        SetStart = Config.Bind("Shortcuts", "SetStart", new KeyboardShortcut(KeyCode.F8), "");
+        SetEnd = Config.Bind("Shortcuts", "SetEnd", new KeyboardShortcut(KeyCode.F9), "");
+        ToggleTriggerMethod = Config.Bind("Shortcuts", "ToggleTriggerMethod", new KeyboardShortcut(KeyCode.F10), "");
+        CancelTimer = Config.Bind("Shortcuts", "CancelTimer", new KeyboardShortcut(KeyCode.None), "Cancel the timer (does not affect pb)");
         StartTimer = Config.Bind("Shortcuts", "StartTimer", new KeyboardShortcut(KeyCode.None), "");
         EndTimer = Config.Bind("Shortcuts", "EndTimer", new KeyboardShortcut(KeyCode.None), "");
         ResetPb = Config.Bind("Shortcuts", "ResetPb", new KeyboardShortcut(KeyCode.None), "");
@@ -40,6 +42,7 @@ public class silksong_timer : BaseUnityPlugin
     private Trigger endTrigger = new SceneTrigger("");
 
     private Keybinds keybinds;
+    private bool usingSceneTriggers = false;
     private double time = 0.0;
 
     private bool timerPaused = true;
@@ -157,22 +160,49 @@ public class silksong_timer : BaseUnityPlugin
             startTimer();
         }
 
-        if (endTrigger.active())
+        if (endTrigger.active() && !timerPaused)
         {
             endTimer();
         }
 
-        if (keybinds.SetStartScene.Value.IsDown())
+        if (keybinds.SetStart.Value.IsDown())
         {
-            startTrigger = new SceneTrigger(SceneManager.GetActiveScene().name);
+            startTrigger.destroy();
             resetPb();
-            Logger.LogInfo("Set start scene");
+
+            if (usingSceneTriggers)
+            {
+                startTrigger = new SceneTrigger(SceneManager.GetActiveScene().name);
+                Logger.LogInfo("Set start scene");
+            }
+            else
+            {
+                startTrigger = new CollisionTrigger(GameManager.instance.hero_ctrl.transform.position,
+                        new Vector2(0.35f, 0.35f), new Color(0.1f, 0.4f, 0.1f));
+                Logger.LogInfo("Set start pos");
+            }
         }
-        if (keybinds.SetEndScene.Value.IsDown())
+        if (keybinds.SetEnd.Value.IsDown())
         {
-            endTrigger = new SceneTrigger(SceneManager.GetActiveScene().name);
+            endTrigger.destroy();
             resetPb();
-            Logger.LogInfo("Set end scene");
+
+            if (usingSceneTriggers)
+            {
+                endTrigger = new SceneTrigger(SceneManager.GetActiveScene().name);
+                Logger.LogInfo("Set end scene");
+            }
+            else
+            {
+                endTrigger = new CollisionTrigger(GameManager.instance.hero_ctrl.transform.position,
+                        new Vector2(0.35f, 0.35f), new Color(0.4f, 0.1f, 0.1f));
+                Logger.LogInfo("Set end pos");
+            }
+        }
+
+        if (keybinds.ToggleTriggerMethod.Value.IsDown())
+        {
+            usingSceneTriggers = !usingSceneTriggers;
         }
         if (keybinds.CancelTimer.Value.IsDown())
         {

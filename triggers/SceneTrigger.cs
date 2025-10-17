@@ -27,4 +27,7 @@ public class SceneTrigger : Trigger
 
         return false;
     }
+
+    public void destroy() {}
 }
+
