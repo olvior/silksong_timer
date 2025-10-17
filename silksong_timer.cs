@@ -1,25 +1,31 @@
-using BepInEx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections;
-using System.Reflection;
-using System.IO;
-using Newtonsoft.Json;
-using System;
+using BepInEx;
+using BepInEx.Configuration;
+
 using GlobalEnums;
+using System;
 
 namespace silksong_timer;
 
-[Serializable]
 public class Keybinds
 {
-    public string SetStartScene = "f8";
-    public string SetEndScene = "f9";
-    public string CancelTimer = "f10";
-    public string ResetPb = "f11";
+    public ConfigEntry<KeyboardShortcut> SetStartScene;
+    public ConfigEntry<KeyboardShortcut> SetEndScene;
+    public ConfigEntry<KeyboardShortcut> CancelTimer;
+    public ConfigEntry<KeyboardShortcut> StartTimer;
+    public ConfigEntry<KeyboardShortcut> EndTimer;
+    public ConfigEntry<KeyboardShortcut> ResetPb;
 
-    public string StartTimer = "f2";
-    public string EndTimer = "f3";
+    public Keybinds(ConfigFile Config)
+    {
+        SetStartScene = Config.Bind("Shortcuts", "SetStartScene", new KeyboardShortcut(KeyCode.F8), "");
+        SetEndScene = Config.Bind("Shortcuts", "SetEndScene", new KeyboardShortcut(KeyCode.F9), "");
+        CancelTimer = Config.Bind("Shortcuts", "CancelTimer", new KeyboardShortcut(KeyCode.F10), "Cancel the timer (does not affect pb)");
+        StartTimer = Config.Bind("Shortcuts", "StartTimer", new KeyboardShortcut(KeyCode.None), "");
+        EndTimer = Config.Bind("Shortcuts", "EndTimer", new KeyboardShortcut(KeyCode.None), "");
+        ResetPb = Config.Bind("Shortcuts", "ResetPb", new KeyboardShortcut(KeyCode.None), "");
+    }
 }
 
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
@@ -30,10 +36,10 @@ public class silksong_timer : BaseUnityPlugin
     private const string MENU_TITLE = "Menu_Title";
     private const string QUIT_TO_MENU = "Quit_To_Menu";
 
-    private string sceneStartTimer = "";
-    private string sceneEndTimer = "";
+    private Trigger startTrigger = new SceneTrigger("");
+    private Trigger endTrigger = new SceneTrigger("");
 
-    private Keybinds keybinds = new Keybinds();
+    private Keybinds keybinds;
     private double time = 0.0;
 
     private bool timerPaused = true;
@@ -146,29 +152,39 @@ public class silksong_timer : BaseUnityPlugin
 
     private void LateUpdate()
     {
-        if (Input.GetKeyDown(keybinds.SetStartScene))
+        if (startTrigger.active() && timerPaused)
         {
-            sceneStartTimer = SceneManager.GetActiveScene().name;
+            startTimer();
+        }
+
+        if (endTrigger.active())
+        {
+            endTimer();
+        }
+
+        if (keybinds.SetStartScene.Value.IsDown())
+        {
+            startTrigger = new SceneTrigger(SceneManager.GetActiveScene().name);
             resetPb();
             Logger.LogInfo("Set start scene");
         }
-        if (Input.GetKeyDown(keybinds.SetEndScene))
+        if (keybinds.SetEndScene.Value.IsDown())
         {
-            sceneEndTimer = SceneManager.GetActiveScene().name;
+            endTrigger = new SceneTrigger(SceneManager.GetActiveScene().name);
             resetPb();
             Logger.LogInfo("Set end scene");
         }
-        if (Input.GetKeyDown(keybinds.CancelTimer))
+        if (keybinds.CancelTimer.Value.IsDown())
         {
             Logger.LogInfo("Canceled");
             time = 0;
             timerPaused = true;
         }
-        if (Input.GetKeyDown(keybinds.ResetPb))
+        if (keybinds.ResetPb.Value.IsDown())
             resetPb();
-        if (Input.GetKeyDown(keybinds.StartTimer))
+        if (keybinds.StartTimer.Value.IsDown())
             startTimer();
-        if (Input.GetKeyDown(keybinds.EndTimer))
+        if (keybinds.EndTimer.Value.IsDown())
             endTimer();
 
         if (ShouldTickTimer())
@@ -186,15 +202,6 @@ public class silksong_timer : BaseUnityPlugin
             timerDisplay = new TimerDisplay();
 
         funSceneCount++;
-
-        if (to.name == sceneStartTimer && timerPaused)
-        {
-            startTimer();
-        }
-        else if (to.name == sceneEndTimer)
-        {
-            endTimer();
-        }
     }
 
     private string getTimeText(double t)
@@ -206,27 +213,11 @@ public class silksong_timer : BaseUnityPlugin
         return $"{minutes}:{seconds:00}.{milis:00}";
     }
 
-    private void LoadKeybinds()
-    {
-        string path = Application.persistentDataPath + "/silksong_timer_settings.json";
-
-        if (!File.Exists(path))
-        {
-            File.WriteAllText(path, JsonConvert.SerializeObject(keybinds, Formatting.Indented));
-            return;
-        }
-
-        keybinds = JsonConvert.DeserializeObject<Keybinds>(File.ReadAllText(path));
-
-        // write the file anyways in case of new keybinds
-        File.WriteAllText(path, JsonConvert.SerializeObject(keybinds, Formatting.Indented));
-    }
-
     private void Awake()
     {
         SceneManager.activeSceneChanged += onActiveSceneChanged;
+        keybinds = new Keybinds(Config);
         Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} has loaded!");
-        LoadKeybinds();
     }
 }
 
