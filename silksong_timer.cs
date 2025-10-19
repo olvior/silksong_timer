@@ -17,6 +17,7 @@ public class Keybinds
     public ConfigEntry<KeyboardShortcut> StartTimer;
     public ConfigEntry<KeyboardShortcut> EndTimer;
     public ConfigEntry<KeyboardShortcut> ResetPb;
+    public ConfigEntry<KeyboardShortcut> ToggleTimerVisibility;
 
     public Keybinds(ConfigFile Config)
     {
@@ -27,6 +28,7 @@ public class Keybinds
         StartTimer = Config.Bind("Shortcuts", "StartTimer", new KeyboardShortcut(KeyCode.None), "");
         EndTimer = Config.Bind("Shortcuts", "EndTimer", new KeyboardShortcut(KeyCode.None), "");
         ResetPb = Config.Bind("Shortcuts", "ResetPb", new KeyboardShortcut(KeyCode.None), "");
+        ToggleTimerVisibility = Config.Bind("Shortcuts", "ToggleTimerVisibility", new KeyboardShortcut(KeyCode.None), "");
     }
 }
 
@@ -216,6 +218,8 @@ public class silksong_timer : BaseUnityPlugin
             startTimer();
         if (keybinds.EndTimer.Value.IsDown())
             endTimer();
+        if (keybinds.ToggleTimerVisibility.Value.IsDown())
+            timerDisplay.toggleVisibility();
 
         if (ShouldTickTimer())
         {

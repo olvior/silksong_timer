@@ -1,14 +1,41 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System;
 
 public class CollisionTrigger : Trigger
 {
-    private GameObject triggerObject;
-
     private bool shouldActivate = false;
+    private string scene;
+
+    private GameObject? triggerObject;
+    private Vector2 pos;
+    private Vector2 size;
+    Color colour;
 
     public CollisionTrigger(Vector2 pos, Vector2 size, Color colour)
     {
+        this.pos = pos;
+        this.size = size;
+        this.colour = colour;
+
+        scene = GameManager.instance.GetSceneNameString();
+
+        createSelf();
+    }
+
+    private void onActiveSceneChanged(Scene from, Scene to)
+    {
+        if (to.name == scene)
+        {
+            destroy();
+            createSelf();
+        }
+    }
+
+    private void createSelf()
+    {
+        SceneManager.activeSceneChanged += onActiveSceneChanged;
+
         Vector3[] vertices = new Vector3[] {
             new Vector3(pos.x, pos.y),
             new Vector3(pos.x, pos.y + size.y),
@@ -30,7 +57,7 @@ public class CollisionTrigger : Trigger
         texture.Apply();
 
         MeshRenderer meshRenderer = triggerObject.AddComponent<MeshRenderer>();
-        meshRenderer.material.shader = Shader.Find("Particles/Multiply");
+        // meshRenderer.material.shader = Shader.Find("Particles/Multiply");
         Console.WriteLine(meshRenderer.material.shader);
         meshRenderer.material.mainTexture = texture;
         meshRenderer.material.color = colour;
@@ -61,6 +88,7 @@ public class CollisionTrigger : Trigger
     public void destroy()
     {
         GameObject.Destroy(triggerObject);
+        SceneManager.activeSceneChanged -= onActiveSceneChanged;
     }
 
 }

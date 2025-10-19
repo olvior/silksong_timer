@@ -13,6 +13,8 @@ public class TimerDisplay
     private Text pbText;
     private Font theFont;
 
+    private bool timerVisible = true;
+
     public TimerDisplay()
     {
         // find font
@@ -70,6 +72,13 @@ public class TimerDisplay
         textTransform.anchorMin = anchorMin;
 
         return text;
+    }
+
+    public void toggleVisibility()
+    {
+        canvas.SetActive(timerVisible);
+
+        timerVisible = !timerVisible;
     }
 
     public void setTime(string time)
